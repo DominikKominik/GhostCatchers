@@ -153,8 +153,6 @@ GameObject:
   - component: {fileID: 4225692525720016589}
   - component: {fileID: 4967335943844339120}
   - component: {fileID: 6910862264934050113}
-  - component: {fileID: 3796911957881950016}
-  - component: {fileID: 6519796913193113424}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -353,34 +351,6 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &3796911957881950016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 883872339748932059}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29a406f853749254b9f54cf080926d7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dosahInterakce: 3
-  hracovaKamera: {fileID: 2302442630464023787}
---- !u!114 &6519796913193113424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 883872339748932059}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0e267699f4e4b3409eefbd5b8d98156, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxSlotu: 9
-  inventar: []
 --- !u!1 &5141529728820915123
 GameObject:
   m_ObjectHideFlags: 0
