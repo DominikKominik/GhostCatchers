@@ -100,12 +100,19 @@ public class Player : NetworkBehaviour
 
     void MovePlayer()
     {
-        // Spoèítáme smìr horizontálního pohybu
         Vector3 moveDirection = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
-        Vector3 horizontalVelocity = moveDirection * MoveSpeed;
 
-        // Pøepíšeme jen horizontální složku rychlosti, vertikální (gravitace/skok)
-        // necháme na pokoji, o tu se stará fyzikální engine (useGravity).
+        // Zkontroluj jestli je pøed hráèem zeï
+        bool hitsWall = Physics.Raycast(transform.position, moveDirection, 0.6f);
+
+        if (hitsWall)
+        {
+            // Zastav horizontální pohyb ale nech gravitaci
+            rb.velocity = new Vector3(0, rb.velocity.y, 0);
+            return;
+        }
+
+        Vector3 horizontalVelocity = moveDirection * MoveSpeed;
         rb.velocity = new Vector3(horizontalVelocity.x, rb.velocity.y, horizontalVelocity.z);
     }
 
