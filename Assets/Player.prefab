@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 1370153946185996690}
   - component: {fileID: 4225692525720016589}
   - component: {fileID: 4967335943844339120}
-  - component: {fileID: 6910862264934050113}
+  - component: {fileID: 6166477975896599930}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -261,7 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3028318449
+  GlobalObjectIdHash: 2589317806
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -287,8 +287,6 @@ MonoBehaviour:
   cameraHolder: {fileID: 756200282453978692}
   MoveSpeed: 8
   jumpForce: 5
-  fallMultiplier: 1
-  ascendMultiplier: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -317,9 +315,9 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!114 &6910862264934050113
+  m_Constraints: 80
+  m_CollisionDetection: 2
+--- !u!114 &6166477975896599930
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -328,7 +326,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 883872339748932059}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ba83730264a5654293f1434327b745b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
