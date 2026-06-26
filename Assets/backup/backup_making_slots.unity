@@ -1122,7 +1122,7 @@ Transform:
   m_GameObject: {fileID: 1242152288}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.91, y: 7.032, z: 3.258}
+  m_LocalPosition: {x: -8.91, y: 7.024, z: 3.258}
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1527,7 +1527,7 @@ GameObject:
   - component: {fileID: 1697262212}
   - component: {fileID: 1697262211}
   - component: {fileID: 1697262210}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1542,13 +1542,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1697262208}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.37971997, y: 0.5965004, z: 0.37971997, w: 0.5965004}
+  m_LocalRotation: {x: -0.38340858, y: 0.5941363, z: 0.38340858, w: 0.5941363}
   m_LocalPosition: {x: -6.9, y: -1.21, z: -2.27}
-  m_LocalScale: {x: 2.09, y: 8.08, z: -0.1}
+  m_LocalScale: {x: 2.09, y: 8.08, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1148707416}
-  m_LocalEulerAnglesHint: {x: -64.96, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: -65.67, y: 90, z: 0}
 --- !u!65 &1697262210
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1632,7 +1632,7 @@ GameObject:
   - component: {fileID: 1968617352}
   - component: {fileID: 1968617351}
   - component: {fileID: 1968617350}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: stairs (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1649,7 +1649,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -12.68, y: 0.49, z: -0.02}
-  m_LocalScale: {x: 4.31, y: 6.9, z: -0.1}
+  m_LocalScale: {x: 4.31, y: 6.9, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1148707416}

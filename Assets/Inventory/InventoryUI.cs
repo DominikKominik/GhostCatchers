@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,23 +8,22 @@ public class InventoryUI : MonoBehaviour
     public Transform inventoryBar;
     private Image[] slotBackgrounds = new Image[9];
     private Image[] slotImages = new Image[9];
+    private bool slotsCreated = false;
 
     public Color normalColor = new Color(0.18f, 0.18f, 0.18f, 1f);
     public Color activeColor = new Color(0.9f, 0.7f, 0.1f, 1f);
 
     void Start()
     {
-        // Poèkej až se spawne lokální hráè
         if (InventorySystem.Instance == null || !InventorySystem.Instance.IsOwner)
         {
             StartCoroutine(WaitForLocalPlayer());
             return;
         }
-
         CreateSlots();
     }
 
-    System.Collections.IEnumerator WaitForLocalPlayer()
+    IEnumerator WaitForLocalPlayer()
     {
         yield return new WaitUntil(() =>
             InventorySystem.Instance != null && InventorySystem.Instance.IsOwner);
@@ -34,7 +32,6 @@ public class InventoryUI : MonoBehaviour
 
     void CreateSlots()
     {
-        // Smaž existující sloty
         foreach (Transform child in inventoryBar)
         {
             Destroy(child.gameObject);
@@ -46,20 +43,21 @@ public class InventoryUI : MonoBehaviour
             slotBackgrounds[i] = slot.GetComponent<Image>();
             slotImages[i] = slot.transform.Find("Icon").GetComponent<Image>();
         }
+
+        slotsCreated = true;
     }
 
     void Update()
     {
+        if (!slotsCreated) return;
         if (InventorySystem.Instance == null) return;
 
         for (int i = 0; i < 9; i++)
         {
-            // Aktivní slot zvýrazni žlutì
             slotBackgrounds[i].color = (i == InventorySystem.Instance.activeSlot)
                 ? activeColor
                 : normalColor;
 
-            // Ikonka pøedmìtu
             Item item = InventorySystem.Instance.slots[i];
             if (item != null && item.icon != null)
             {
