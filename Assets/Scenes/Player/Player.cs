@@ -48,7 +48,7 @@ public class Player : NetworkBehaviour
 
         // Zabrání pøevrácení postavy na stranu pøi kolizích. Rotaci kolem Y
         // øídíme manuálnì v RotateCamera(), proto ji necháváme volnou.
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
         if (IsOwner)
         {
@@ -76,8 +76,8 @@ public class Player : NetworkBehaviour
         // Detekce zemì pod nohama
         if (groundCheckTimer <= 0f)
         {
-            Vector3 rayOrigin = transform.position + Vector3.up * 0.1f;
-            isGrounded = Physics.Raycast(rayOrigin, Vector3.down, raycastDistance, groundLayer);
+            isGrounded = Physics.CheckSphere(
+              transform.position + Vector3.down * (raycastDistance - 0.1f), 0.2f, groundLayer);
         }
         else
         {
