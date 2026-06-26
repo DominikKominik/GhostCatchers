@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/backup/backup_making_slots.unity
     guid: 1225cd64870934c4396ba8a46a99ee90
   - enabled: 1
-    path: Assets/backup/backup_finished_slots.unity
+    path: Assets/Scenes/MainScene.unity
     guid: 12831d25d16ad49499c93b63c85b12b0
   m_configObjects: {}
