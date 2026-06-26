@@ -152,7 +152,13 @@ GameObject:
   - component: {fileID: 1370153946185996690}
   - component: {fileID: 4225692525720016589}
   - component: {fileID: 4967335943844339120}
+<<<<<<< HEAD
   - component: {fileID: 6166477975896599930}
+=======
+  - component: {fileID: 6910862264934050113}
+  - component: {fileID: 3796911957881950016}
+  - component: {fileID: 6519796913193113424}
+>>>>>>> 13b93d1732752a1467e4abeb90f3db252be270be
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -174,6 +180,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8334183348586068215}
+  - {fileID: 8317493451994450487}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6514518339780244717
@@ -286,7 +293,13 @@ MonoBehaviour:
   cameraTransform: {fileID: 8334183348586068215}
   cameraHolder: {fileID: 756200282453978692}
   MoveSpeed: 8
+<<<<<<< HEAD
   jumpForce: 5
+=======
+  jumpForce: 7
+  fallMultiplier: 1
+  ascendMultiplier: 1
+>>>>>>> 13b93d1732752a1467e4abeb90f3db252be270be
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -348,3 +361,62 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &3796911957881950016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883872339748932059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29a406f853749254b9f54cf080926d7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dosahInterakce: 3
+  hracovaKamera: {fileID: 2302442630464023787}
+--- !u!114 &6519796913193113424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883872339748932059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0e267699f4e4b3409eefbd5b8d98156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSlotu: 9
+  inventar: []
+--- !u!1 &5141529728820915123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8317493451994450487}
+  m_Layer: 0
+  m_Name: ruka
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8317493451994450487
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5141529728820915123}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.639, y: 0.346, z: 0.329}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3231540422084450727}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
