@@ -21,8 +21,8 @@ public class Door : MonoBehaviour
 
     void Update()
     {
-        // Otevøení/zavøení
-        if (Input.GetKeyDown(KeyCode.F))
+        // Otevøení/zavøení - jen pokud dveøe zrovna nejsou v pohybu
+        if (!isMoving && Input.GetKeyDown(KeyCode.F))
         {
             Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
             if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
@@ -30,12 +30,23 @@ public class Door : MonoBehaviour
                 if (hit.collider.gameObject == gameObject)
                 {
                     isOpen = !isOpen;
+                    isMoving = true;
                 }
             }
         }
 
         // Animace
-        Quaternion target = isOpen ? openRotation : closedRotation;
-        transform.rotation = Quaternion.Lerp(transform.rotation, target, Time.deltaTime * speed);
+        if (isMoving)
+        {
+            Quaternion target = isOpen ? openRotation : closedRotation;
+            transform.rotation = Quaternion.Lerp(transform.rotation, target, Time.deltaTime * speed);
+
+            // Jakmile jsme dostateènì blízko cíli, dorovnáme pøesnì a animaci ukonèíme
+            if (Quaternion.Angle(transform.rotation, target) < 0.1f)
+            {
+                transform.rotation = target;
+                isMoving = false;
+            }
+        }
     }
 }
