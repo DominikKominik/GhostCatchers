@@ -39,7 +39,7 @@ public class ItemPickup : NetworkBehaviour
             if (isLookingAtThis && Input.GetKeyDown(KeyCode.E))
             {
                 InventorySystem.Instance.AddItem(item);
-                HideItemServerRpc();
+                HideItemRpc(); // Zmìnìno na nový název metody
             }
         }
         else
@@ -48,12 +48,15 @@ public class ItemPickup : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    void HideItemServerRpc()
+    // OPRAVA PRO UNITY 6: Použití nového Rpc atributu místo ServerRpc
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    void HideItemRpc() // Pøejmenováno, aby název konèil pouze "Rpc"
     {
         HideItemClientRpc();
     }
 
+    // Tady mùže zùstat ClientRpc atribut, ale pro jednotnost v Unity 6 
+    // se doporuèuje používat [Rpc(SendTo.Everyone)] - pro teï ale staèí takto:
     [ClientRpc]
     void HideItemClientRpc()
     {

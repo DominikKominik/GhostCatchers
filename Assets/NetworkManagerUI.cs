@@ -26,6 +26,25 @@ public class NetworkManagerUI : MonoBehaviour
     // Vykreslení testovacího menu na obrazovku
     private void OnGUI()
     {
+        // KROK 1: Pokud Singleton neexistuje, zkusíme ho ve scénì najít
+        if (NetworkManager.Singleton == null)
+        {
+            NetworkManager foundManager = FindAnyObjectByType<NetworkManager>();
+            if (foundManager == null) return;
+        }
+
+        // KROK 2: Neprùstøelná pojistka pro Unity 6.
+        // Vyzkoušíme, zda interní podsystémy Netcodu už žijí. Pokud vyhodí chybu,
+        // v tichosti pøeskoèíme tento snímek (return) a poèkáme na další.
+        try
+        {
+            var dummyCheck = NetworkManager.Singleton.IsClient;
+        }
+        catch (System.NullReferenceException)
+        {
+            return;
+        }
+
         // Vytvoøí okénko v levém horním rohu (X: 20, Y: 20, Šíøka: 300, Výška: 250)
         GUILayout.BeginArea(new Rect(20, 20, 300, 250));
 

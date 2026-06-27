@@ -5,7 +5,7 @@ using UnityEngine;
 
 /*
     This script provides jumping and movement in Unity 3D - Gatsby (Multiplayer Edition)
-    Pohyb øešen pøes Rigidbody.velocity (vlastník = nekinematický, ostatní = kinematic)
+    Pohyb ï¿½eï¿½en pï¿½es Rigidbody.velocity (vlastnï¿½k = nekinematickï¿½, ostatnï¿½ = kinematic)
 */
 
 public class Player : NetworkBehaviour
@@ -24,7 +24,7 @@ public class Player : NetworkBehaviour
     private float moveForward;
 
     // Jumping
-    public float jumpForce = 6f; // hodnota teï reprezentuje rychlost (m/s), nejspíš budeš muset snížit oproti pùvodní
+    public float jumpForce = 6f; // hodnota teï¿½ reprezentuje rychlost (m/s), nejspï¿½ budeï¿½ muset snï¿½it oproti pï¿½vodnï¿½
     private bool isGrounded = true;
     public LayerMask groundLayer;
     private float groundCheckTimer = 0f;
@@ -39,15 +39,15 @@ public class Player : NetworkBehaviour
         playerHeight = GetComponent<CapsuleCollider>().height * transform.localScale.y;
         raycastDistance = (playerHeight / 2) + 0.1f;
 
-        // Jen vlastník (autoritativní strana) reálnì simuluje fyziku pøes
-        // dynamický Rigidbody. Ostatní instance (pohled cizích klientù na tuto
-        // postavu) zùstávají kinematic a jen sledují synchronizovaný transform
-        // pøes ClientNetworkTransform.
+        // Jen vlastnï¿½k (autoritativnï¿½ strana) reï¿½lnï¿½ simuluje fyziku pï¿½es
+        // dynamickï¿½ Rigidbody. Ostatnï¿½ instance (pohled cizï¿½ch klientï¿½ na tuto
+        // postavu) zï¿½stï¿½vajï¿½ kinematic a jen sledujï¿½ synchronizovanï¿½ transform
+        // pï¿½es ClientNetworkTransform.
         rb.isKinematic = !IsOwner;
         rb.useGravity = true;
 
-        // Zabrání pøevrácení postavy na stranu pøi kolizích. Rotaci kolem Y
-        // øídíme manuálnì v RotateCamera(), proto ji necháváme volnou.
+        // Zabrï¿½nï¿½ pï¿½evrï¿½cenï¿½ postavy na stranu pï¿½i kolizï¿½ch. Rotaci kolem Y
+        // ï¿½ï¿½dï¿½me manuï¿½lnï¿½ v RotateCamera(), proto ji nechï¿½vï¿½me volnou.
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
         if (IsOwner)
@@ -73,7 +73,7 @@ public class Player : NetworkBehaviour
 
         RotateCamera();
 
-        // Detekce zemì pod nohama
+        // Detekce zemï¿½ pod nohama
         if (groundCheckTimer <= 0f)
         {
             isGrounded = Physics.CheckSphere(
@@ -102,18 +102,18 @@ public class Player : NetworkBehaviour
     {
         Vector3 moveDirection = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
 
-        // Zkontroluj jestli je pøed hráèem zeï
+        // Zkontroluj jestli je pï¿½ed hrï¿½ï¿½em zeï¿½
         bool hitsWall = Physics.Raycast(transform.position, moveDirection, 0.6f);
 
         if (hitsWall)
         {
-            // Zastav horizontální pohyb ale nech gravitaci
-            rb.velocity = new Vector3(0, rb.velocity.y, 0);
+            // Zastav horizontï¿½lnï¿½ pohyb ale nech gravitaci
+            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
             return;
         }
 
         Vector3 horizontalVelocity = moveDirection * MoveSpeed;
-        rb.velocity = new Vector3(horizontalVelocity.x, rb.velocity.y, horizontalVelocity.z);
+        rb.linearVelocity = new Vector3(horizontalVelocity.x, rb.linearVelocity.y, horizontalVelocity.z);
     }
 
     void RotateCamera()
@@ -134,6 +134,6 @@ public class Player : NetworkBehaviour
     {
         isGrounded = false;
         groundCheckTimer = groundCheckDelay;
-        rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
     }
 }
