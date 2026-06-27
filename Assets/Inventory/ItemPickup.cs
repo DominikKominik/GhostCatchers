@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.InputSystem; // DÙLEŽITÉ: Pøidáno pro funkènost nového Input Systemu
 
 public class ItemPickup : NetworkBehaviour
 {
@@ -36,7 +37,8 @@ public class ItemPickup : NetworkBehaviour
             bool isLookingAtThis = hit.collider.gameObject == gameObject;
             outline.enabled = isLookingAtThis;
 
-            if (isLookingAtThis && Input.GetKeyDown(KeyCode.E))
+            // OPRAVENO PRO NOVÝ INPUT SYSTEM: Kontrola stisknutí klávesy E
+            if (isLookingAtThis && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
             {
                 InventorySystem.Instance.AddItem(item);
                 HideItemRpc(); // Zmìnìno na nový název metody
