@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
+using Image = UnityEngine.UI.Image;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -9,24 +11,27 @@ public class InventoryUI : MonoBehaviour
     private Image[] slotBackgrounds = new Image[9];
     private Image[] slotImages = new Image[9];
     private bool slotsCreated = false;
+    private InventorySystem localInventory;
 
     public Color normalColor = new Color(0.18f, 0.18f, 0.18f, 1f);
     public Color activeColor = new Color(0.9f, 0.7f, 0.1f, 1f);
 
     void Start()
     {
-        if (InventorySystem.Instance == null || !InventorySystem.Instance.IsOwner)
-        {
-            StartCoroutine(WaitForLocalPlayer());
-            return;
-        }
-        CreateSlots();
+        StartCoroutine(WaitForLocalPlayer());
     }
 
     IEnumerator WaitForLocalPlayer()
     {
+        // Poèkej až se spawne lokální hráè
         yield return new WaitUntil(() =>
-            InventorySystem.Instance != null && InventorySystem.Instance.IsOwner);
+            NetworkManager.Singleton != null &&
+            NetworkManager.Singleton.LocalClient != null &&
+            NetworkManager.Singleton.LocalClient.PlayerObject != null);
+
+        localInventory = NetworkManager.Singleton.LocalClient.PlayerObject
+            .GetComponent<InventorySystem>();
+
         CreateSlots();
     }
 
@@ -50,15 +55,15 @@ public class InventoryUI : MonoBehaviour
     void Update()
     {
         if (!slotsCreated) return;
-        if (InventorySystem.Instance == null) return;
+        if (localInventory == null) return;
 
         for (int i = 0; i < 9; i++)
         {
-            slotBackgrounds[i].color = (i == InventorySystem.Instance.activeSlot)
+            slotBackgrounds[i].color = (i == localInventory.activeSlot)
                 ? activeColor
                 : normalColor;
 
-            Item item = InventorySystem.Instance.slots[i];
+            Item item = localInventory.slots[i];
             if (item != null && item.icon != null)
             {
                 slotImages[i].sprite = item.icon;

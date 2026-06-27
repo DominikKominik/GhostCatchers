@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 363ed3f702f8ea14b906ef7bd337eef0, type: 3}
-  m_Name: Kniha
+  m_Name: Kniha 2
   m_EditorClassIdentifier: 
-  itemName: Kniha
+  itemName: 'Kniha 2 '
   icon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
-  prefab: {fileID: 4953058080855117852, guid: f2edfaa1bad6f8741a299f060dc79566, type: 3}
+  prefab: {fileID: 7592218170216334516, guid: 50ce48ddb9727204cad623ada55e04fe, type: 3}
