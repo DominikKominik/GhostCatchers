@@ -14,34 +14,44 @@ public class Door : MonoBehaviour
 
     void Start()
     {
-        cam = Camera.main;
         closedRotation = transform.rotation;
-        openRotation = Quaternion.Euler(transform.eulerAngles + new Vector3(0, openAngle, 0));
     }
 
     void Update()
     {
-        // Otevøení/zavøení - jen pokud dveøe zrovna nejsou v pohybu
+        if (cam == null)
+        {
+            cam = Camera.main;
+            if (cam == null) return;
+        }
+
         if (!isMoving && Input.GetKeyDown(KeyCode.F))
         {
             Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
             if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
             {
-                if (hit.collider.gameObject == gameObject)
+                if (hit.collider.transform.IsChildOf(transform) || hit.collider.gameObject == gameObject)
                 {
+                    if (!isOpen)
+                    {
+                        Vector3 directionToPlayer = (cam.transform.position - transform.position).normalized;
+                        float side = Vector3.Dot(transform.right, directionToPlayer);
+
+                        float angle = side >= 0 ? openAngle : -openAngle;
+                        openRotation = Quaternion.Euler(transform.eulerAngles + new Vector3(0, angle, 0));
+                    }
+
                     isOpen = !isOpen;
                     isMoving = true;
                 }
             }
         }
 
-        // Animace
         if (isMoving)
         {
             Quaternion target = isOpen ? openRotation : closedRotation;
             transform.rotation = Quaternion.Lerp(transform.rotation, target, Time.deltaTime * speed);
 
-            // Jakmile jsme dostateènì blízko cíli, dorovnáme pøesnì a animaci ukonèíme
             if (Quaternion.Angle(transform.rotation, target) < 0.1f)
             {
                 transform.rotation = target;
