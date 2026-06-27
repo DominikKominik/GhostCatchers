@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 5657268679561529127}
   - component: {fileID: 524061366726553985}
   - component: {fileID: 5565698806203074682}
+  - component: {fileID: -1108580540586687902}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -357,6 +358,27 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   activeSlot: 0
+--- !u!114 &-1108580540586687902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2298996680941715769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0702d13cec768a241a55496938a95678, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTeam
+  ShowTopMostFoldoutHeaderGroup: 1
+  bodyRenderer: {fileID: 2819762092598536437}
+  catcherMaterial: {fileID: 2100000, guid: 41a77a97764c15f438d4b4fe0092f29f, type: 2}
+  ghostMaterial: {fileID: 2100000, guid: a96330357760dcb498a92b33cb1ae49b, type: 2}
+  CurrentTeam:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!1 &6691702117679253255
 GameObject:
   m_ObjectHideFlags: 0

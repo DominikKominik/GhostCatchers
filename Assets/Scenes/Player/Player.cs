@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem; // DŮLEŽITÉ: Přidáno pro funkčnost nového Input Systemu
+using UnityEngine.InputSystem;
 
 /*
     This script provides jumping and movement in Unity 3D - Gatsby (Multiplayer Edition)
-    Pohyb řešen přes Rigidbody.velocity (vlastník = nekinematický, ostatní = kinematic)
+    Pohyb řešen přes Rigidbody.linearVelocity, pohyb odemčen až po výběru týmu
 */
 
 public class Player : NetworkBehaviour
@@ -20,12 +18,13 @@ public class Player : NetworkBehaviour
 
     // Ground Movement
     private Rigidbody rb;
+    private PlayerTeam playerTeam;
     public float MoveSpeed = 5f;
     private float moveHorizontal;
     private float moveForward;
 
     // Jumping
-    public float jumpForce = 6f; // hodnota teď reprezentuje rychlost (m/s), nejspíš budeš muset snížit oproti původní
+    public float jumpForce = 6f;
     private bool isGrounded = true;
     public LayerMask groundLayer;
     private float groundCheckTimer = 0f;
@@ -36,38 +35,32 @@ public class Player : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         rb = GetComponent<Rigidbody>();
+        playerTeam = GetComponent<PlayerTeam>();
 
         playerHeight = GetComponent<CapsuleCollider>().height * transform.localScale.y;
         raycastDistance = (playerHeight / 2) + 0.1f;
 
-        // Jen vlastník (autoritativní strana) reálně simuluje fyziku přes
-        // dynamické Rigidbody. Ostatní instance (pohled cizích klientů na tuto
-        // postavu) zůstávají kinematic a jen sledují synchronizovaný transform
-        // přes ClientNetworkTransform.
         rb.isKinematic = !IsOwner;
         rb.useGravity = true;
-
-        // Zabrání převrácení postavy na stranu při kolizích. Rotaci kolem Y
-        // řídíme manuálně v RotateCamera(), proto ji necháváme volnou.
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
-        if (IsOwner)
+        // Kurzor (zamknutí/odemknutí) teď řeší PlayerTeam podle toho,
+        // jestli je vybraný tým - tady už ho neřešíme.
+        if (!IsOwner && cameraHolder != null)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            cameraHolder.SetActive(false);
         }
-        else
-        {
-            if (cameraHolder != null)
-            {
-                cameraHolder.SetActive(false);
-            }
-        }
+    }
+
+    private bool CanControl()
+    {
+        // Pohyb jen pro vlastníka, a jen pokud už má vybraný tým
+        return IsOwner && playerTeam != null && playerTeam.CurrentTeam.Value != Team.None;
     }
 
     void Update()
     {
-        if (!IsOwner) return;
+        if (!CanControl()) return;
 
         // NOVÝ INPUT SYSTEM: Čtení pohybu z klávesnice (WASD / Šipky)
         moveHorizontal = 0f;
@@ -103,7 +96,7 @@ public class Player : NetworkBehaviour
 
     void FixedUpdate()
     {
-        if (!IsOwner) return;
+        if (!CanControl()) return;
 
         MovePlayer();
     }
@@ -133,7 +126,7 @@ public class Player : NetworkBehaviour
 
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
-        float horizontalRotation = mouseDelta.x * mouseSensitivity * 0.1f; // Multiplikátor 0.1f vyrovnává vyšší citlivost delty myši
+        float horizontalRotation = mouseDelta.x * mouseSensitivity * 0.1f;
         transform.Rotate(0, horizontalRotation, 0);
 
         verticalRotation -= mouseDelta.y * mouseSensitivity * 0.1f;
