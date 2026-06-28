@@ -69,7 +69,20 @@ public class ItemPickup : NetworkBehaviour
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     void HideItemRpc()
     {
-        // Despawn p¯es sÌù a smaû objekt
-        GetComponent<NetworkObject>().Despawn(true);
+        NetworkObject netObj = GetComponent<NetworkObject>();
+        if (netObj != null && netObj.IsSpawned && !netObj.InScenePlaced)
+        {
+            netObj.Despawn(true);
+        }
+        else
+        {
+            HideStaticItemClientRpc();
+        }
+    }
+
+    [ClientRpc]
+    void HideStaticItemClientRpc()
+    {
+        gameObject.SetActive(false);
     }
 }

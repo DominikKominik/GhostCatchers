@@ -2,11 +2,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/*
-    This script provides jumping and movement in Unity 3D - Gatsby (Multiplayer Edition)
-    Pohyb řešen přes Rigidbody.linearVelocity, pohyb odemčen až po výběru týmu
-*/
-
 public class Player : NetworkBehaviour
 {
     // Camera Rotation
@@ -32,6 +27,14 @@ public class Player : NetworkBehaviour
     private float playerHeight;
     private float raycastDistance;
 
+    // Landing impact
+    private bool wasGrounded = true;
+    public float landingImpactAmount = 0.15f;
+    public float landingImpactSpeed = 8f;
+    private float cameraYOffset = 0f;
+    private float targetCameraYOffset = 0f;
+    private Vector3 cameraDefaultLocalPosition;
+
     public override void OnNetworkSpawn()
     {
         rb = GetComponent<Rigidbody>();
@@ -44,8 +47,9 @@ public class Player : NetworkBehaviour
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
-        // Kurzor (zamknutí/odemknutí) teď řeší PlayerTeam podle toho,
-        // jestli je vybraný tým - tady už ho neřešíme.
+        if (cameraTransform != null)
+            cameraDefaultLocalPosition = cameraTransform.localPosition;
+
         if (!IsOwner && cameraHolder != null)
         {
             cameraHolder.SetActive(false);
@@ -54,7 +58,6 @@ public class Player : NetworkBehaviour
 
     private bool CanControl()
     {
-        // Pohyb jen pro vlastníka, a jen pokud už má vybraný tým
         return IsOwner && playerTeam != null && playerTeam.CurrentTeam.Value != Team.None;
     }
 
@@ -62,7 +65,6 @@ public class Player : NetworkBehaviour
     {
         if (!CanControl()) return;
 
-        // NOVÝ INPUT SYSTEM: Čtení pohybu z klávesnice (WASD / Šipky)
         moveHorizontal = 0f;
         moveForward = 0f;
 
@@ -75,19 +77,18 @@ public class Player : NetworkBehaviour
         }
 
         RotateCamera();
+        LandingImpact();
 
-        // Detekce země pod nohama
         if (groundCheckTimer <= 0f)
         {
             isGrounded = Physics.CheckSphere(
-              transform.position + Vector3.down * (raycastDistance - 0.1f), 0.2f, groundLayer);
+                transform.position + Vector3.down * (raycastDistance - 0.1f), 0.2f, groundLayer);
         }
         else
         {
             groundCheckTimer -= Time.deltaTime;
         }
 
-        // NOVÝ INPUT SYSTEM: Skok (Mezerník)
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
         {
             Jump();
@@ -97,7 +98,6 @@ public class Player : NetworkBehaviour
     void FixedUpdate()
     {
         if (!CanControl()) return;
-
         MovePlayer();
     }
 
@@ -105,13 +105,25 @@ public class Player : NetworkBehaviour
     {
         Vector3 moveDirection = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
 
-        // Zkontroluj jestli je před hráčem zeď
         bool hitsWall = Physics.Raycast(transform.position, moveDirection, 0.6f);
 
-        if (hitsWall)
+        if (hitsWall && isGrounded)
         {
-            // Zastav horizontální pohyb ale nech gravitaci
             rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            return;
+        }
+
+        if (!isGrounded)
+        {
+            if (moveDirection.magnitude > 0)
+            {
+                Vector3 airControl = moveDirection * MoveSpeed * 0.8f;
+                rb.linearVelocity = new Vector3(
+                    Mathf.Lerp(rb.linearVelocity.x, airControl.x, Time.fixedDeltaTime * 8f),
+                    rb.linearVelocity.y,
+                    Mathf.Lerp(rb.linearVelocity.z, airControl.z, Time.fixedDeltaTime * 8f)
+                );
+            }
             return;
         }
 
@@ -121,7 +133,6 @@ public class Player : NetworkBehaviour
 
     void RotateCamera()
     {
-        // NOVÝ INPUT SYSTEM: Čtení pohybu myši
         if (Mouse.current == null) return;
 
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
@@ -135,6 +146,27 @@ public class Player : NetworkBehaviour
         if (cameraTransform != null)
         {
             cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+        }
+    }
+
+    void LandingImpact()
+    {
+        if (!wasGrounded && isGrounded)
+        {
+            targetCameraYOffset = -landingImpactAmount;
+        }
+        wasGrounded = isGrounded;
+
+        targetCameraYOffset = Mathf.Lerp(targetCameraYOffset, 0f, Time.deltaTime * landingImpactSpeed);
+        cameraYOffset = Mathf.Lerp(cameraYOffset, targetCameraYOffset, Time.deltaTime * landingImpactSpeed);
+
+        if (cameraTransform != null)
+        {
+            cameraTransform.localPosition = new Vector3(
+                cameraDefaultLocalPosition.x,
+                cameraDefaultLocalPosition.y + cameraYOffset,
+                cameraDefaultLocalPosition.z
+            );
         }
     }
 
