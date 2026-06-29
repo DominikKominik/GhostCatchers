@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem; // DÙLEŽITÉ: Pøidáno pro ovládání kurzoru v novém Input Systemu
 
 public class TeamSelectionUI : MonoBehaviour
 {
@@ -10,8 +9,6 @@ public class TeamSelectionUI : MonoBehaviour
     [SerializeField] private Button catcherButton;
     [SerializeField] private Button ghostButton;
 
-    // ODSTRANÌNO: Nefunkèní texty, které házely NullReferenceException
-
     private PlayerTeam localPlayer;
 
     private void Awake()
@@ -19,8 +16,19 @@ public class TeamSelectionUI : MonoBehaviour
         Instance = this;
         panel.SetActive(false);
 
-        catcherButton.onClick.AddListener(() => localPlayer?.RequestTeam(Team.Catcher));
-        ghostButton.onClick.AddListener(() => localPlayer?.RequestTeam(Team.Ghost));
+        catcherButton.onClick.AddListener(() => {
+            if (localPlayer != null)
+            {
+                localPlayer.RequestTeam(Team.Catcher);
+            }
+        });
+
+        ghostButton.onClick.AddListener(() => {
+            if (localPlayer != null)
+            {
+                localPlayer.RequestTeam(Team.Ghost);
+            }
+        });
     }
 
     public void Show(PlayerTeam player)
@@ -28,7 +36,6 @@ public class TeamSelectionUI : MonoBehaviour
         localPlayer = player;
         panel.SetActive(true);
 
-        // Zpøístupníme myš pro klikání v menu
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -44,7 +51,6 @@ public class TeamSelectionUI : MonoBehaviour
     {
         panel.SetActive(false);
 
-        // NOVÝ INPUT SYSTEM OPRAVA: Po výbìru týmu zamkneme myš zpìt do hry, aby šlo chodit a otáèet se
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -67,7 +73,6 @@ public class TeamSelectionUI : MonoBehaviour
         int catchers = TeamManager.Instance.CatcherCount.Value;
         int ghosts = TeamManager.Instance.GhostCount.Value;
 
-        // Tlaèítka se vypnou pouze v pøípadì, že je tým už plný
         catcherButton.interactable = catchers < TeamManager.MaxCatchers;
         ghostButton.interactable = ghosts < TeamManager.MaxGhosts;
     }

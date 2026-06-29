@@ -1,13 +1,6 @@
+using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
-using System.Threading.Tasks; // DÙLEŽITÉ: Pøidáno pro fungování Task.Delay
-
-public enum Team
-{
-    None,    // dosud nevybráno
-    Catcher, // lidé - èervený válec
-    Ghost    // duch - zelený válec
-}
 
 public class PlayerTeam : NetworkBehaviour
 {
@@ -16,46 +9,54 @@ public class PlayerTeam : NetworkBehaviour
     [SerializeField] private Material catcherMaterial;
     [SerializeField] private Material ghostMaterial;
 
+    [Header("Výchozí nastavení týmu pro tento PREFAB")]
+    [SerializeField] private Team initialPrefabTeam = Team.None;
+
     public NetworkVariable<Team> CurrentTeam = new NetworkVariable<Team>(
         Team.None, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     public override void OnNetworkSpawn()
     {
         CurrentTeam.OnValueChanged += OnTeamChanged;
-        UpdateVisual(CurrentTeam.Value);
+
+        UpdateVisual(CurrentTeam.Value != Team.None ? CurrentTeam.Value : initialPrefabTeam);
 
         if (IsOwner)
         {
-            // Dokud si hráè nevybere tým, kurzor je volný kvùli klikání v menu
+            if (initialPrefabTeam != Team.None)
+            {
+                // Pojistka pro hotový Catcher/Ghost prefab - hlavní mechanismus
+                // schování UI je ale NotifyTeamReadyRpc() níže.
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                if (TeamSelectionUI.Instance != null)
+                {
+                    TeamSelectionUI.Instance.Hide();
+                }
+                return;
+            }
+
+            // Lobby placeholder (None) - ukážeme menu
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-
-            // Spustíme asynchronní bezpeèné otevøení menu (poèkej na inicializaci UI)
             TryShowUI();
         }
     }
 
     private async void TryShowUI()
     {
-        // Pokud UI na scénì ještì neexistuje (klient se naèetl rychleji než se probudil Canvas),
-        // poèkáme 100 milisekund a zkusíme to znovu.
         while (TeamSelectionUI.Instance == null)
         {
             await Task.Delay(100);
+            if (this == null) return; // objekt mohl být mezitím despawnutý
         }
-
-        // Jakmile už UI prokazatelnì žije, bezpeènì ho klientovi ukážeme
+        if (this == null) return;
         TeamSelectionUI.Instance.Show(this);
     }
 
     public override void OnNetworkDespawn()
     {
         CurrentTeam.OnValueChanged -= OnTeamChanged;
-
-        if (IsServer && TeamManager.Instance != null)
-        {
-            TeamManager.Instance.HandleDisconnect(CurrentTeam.Value);
-        }
     }
 
     public void RequestTeam(Team team)
@@ -63,15 +64,24 @@ public class PlayerTeam : NetworkBehaviour
         RequestTeamRpc(team);
     }
 
-    // RPC upraveno pro èistou funkènost v Unity 6
     [Rpc(SendTo.Server)]
     private void RequestTeamRpc(Team requestedTeam)
     {
         if (TeamManager.Instance == null) return;
+        TeamManager.Instance.TryAssignTeam(this, requestedTeam);
+    }
 
-        if (TeamManager.Instance.TryAssignTeam(this, requestedTeam))
+    // Server tohle zavolá hned po SpawnAsPlayerObject + nastavení CurrentTeam.Value.
+    // Na rozdíl od NetworkVariable.OnValueChanged tomu NEHROZÍ race condition se
+    // spawn zprávou - je to pøímá, jednorázová zpráva konkrétnímu klientovi.
+    [Rpc(SendTo.Owner)]
+    public void NotifyTeamReadyRpc()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        if (TeamSelectionUI.Instance != null)
         {
-            CurrentTeam.Value = requestedTeam;
+            TeamSelectionUI.Instance.Hide();
         }
     }
 
@@ -79,20 +89,24 @@ public class PlayerTeam : NetworkBehaviour
     {
         UpdateVisual(newTeam);
 
+        // Záložní mechanismus - kdyby RPC z nìjakého dùvodu nedorazilo
         if (IsOwner && newTeam != Team.None)
         {
-            // Tým vybrán - zavøeme menu (které v sobì už má schování a zamknutí kurzoru)
-            TeamSelectionUI.Instance?.Hide();
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            if (TeamSelectionUI.Instance != null)
+            {
+                TeamSelectionUI.Instance.Hide();
+            }
         }
     }
 
     private void UpdateVisual(Team team)
     {
         if (bodyRenderer == null) return;
-
-        if (team == Team.Catcher)
+        if (team == Team.Catcher && catcherMaterial != null)
             bodyRenderer.material = catcherMaterial;
-        else if (team == Team.Ghost)
+        else if (team == Team.Ghost && ghostMaterial != null)
             bodyRenderer.material = ghostMaterial;
     }
 }

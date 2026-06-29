@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,6 +8,10 @@ public class TeamManager : NetworkBehaviour
 
     public const int MaxCatchers = 5;
     public const int MaxGhosts = 1;
+
+    [Header("Prefaby Tımù")]
+    [SerializeField] private GameObject catcherPrefab;
+    [SerializeField] private GameObject ghostPrefab;
 
     public NetworkVariable<int> CatcherCount = new NetworkVariable<int>(
         0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -26,13 +31,47 @@ public class TeamManager : NetworkBehaviour
         if (requested == Team.Catcher && CatcherCount.Value >= MaxCatchers) return false;
         if (requested == Team.Ghost && GhostCount.Value >= MaxGhosts) return false;
 
-        // Pokud hráè u døív nìjakı tım mìl, uvolníme mu místo (pro budoucí pøepínání)
-        ReleaseTeam(player.CurrentTeam.Value);
+        ulong clientId = player.OwnerClientId;
+        Vector3 spawnPosition = player.transform.position;
+        Quaternion spawnRotation = player.transform.rotation;
 
-        if (requested == Team.Catcher) CatcherCount.Value++;
-        else if (requested == Team.Ghost) GhostCount.Value++;
+        GameObject prefabToSpawn = (requested == Team.Catcher) ? catcherPrefab : ghostPrefab;
+        if (prefabToSpawn != null)
+        {
+            ReleaseTeam(player.CurrentTeam.Value);
 
-        return true;
+            GameObject newPlayerObj = Instantiate(prefabToSpawn, spawnPosition, spawnRotation);
+            NetworkObject newNetworkObject = newPlayerObj.GetComponent<NetworkObject>();
+            newNetworkObject.SpawnAsPlayerObject(clientId, true);
+
+            PlayerTeam newPlayerTeam = newPlayerObj.GetComponent<PlayerTeam>();
+            if (newPlayerTeam != null)
+            {
+                newPlayerTeam.CurrentTeam.Value = requested;
+
+                // KLÍÈOVÁ OPRAVA: explicitní RPC pøímo vlastníkovi, a schová UI.
+                // NetworkVariable nastavená o øádek vıš mùe klientovi dorazit se
+                // starou hodnotou ve spawn zprávì (známé chování NGO) - RPC ne.
+                newPlayerTeam.NotifyTeamReadyRpc();
+            }
+
+            StartCoroutine(DestroyOldPlayerRoutine(player.NetworkObject));
+
+            if (requested == Team.Catcher) CatcherCount.Value++;
+            else if (requested == Team.Ghost) GhostCount.Value++;
+
+            return true;
+        }
+        return false;
+    }
+
+    private IEnumerator DestroyOldPlayerRoutine(NetworkObject oldNetworkObject)
+    {
+        yield return new WaitForEndOfFrame();
+        if (oldNetworkObject != null && oldNetworkObject.IsSpawned)
+        {
+            oldNetworkObject.Despawn(true);
+        }
     }
 
     public void HandleDisconnect(Team team)

@@ -4150,6 +4150,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TeamManager
   ShowTopMostFoldoutHeaderGroup: 1
+  catcherPrefab: {fileID: 2298996680941715769, guid: 9979dedfed543ba4eb6d42d8612896cd,
+    type: 3}
+  ghostPrefab: {fileID: 2298996680941715769, guid: 19398124c8369cd4f836b18eb47cb238,
+    type: 3}
   CatcherCount:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
