@@ -31,6 +31,18 @@ public class InventorySystem : NetworkBehaviour
         base.OnDestroy();
     }
 
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner)
+        {
+            InventoryUI ui = FindAnyObjectByType<InventoryUI>();
+            if (ui != null)
+            {
+                ui.InitializeForPlayer(this);
+            }
+        }
+    }
+
     void Update()
     {
         if (!IsOwner) return;

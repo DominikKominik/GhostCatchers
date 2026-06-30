@@ -37,7 +37,7 @@ public class LocalItemPickup : MonoBehaviour
             bool isLookingAtThis = hit.collider.gameObject == gameObject;
             outline.enabled = isLookingAtThis;
 
-            if (isLookingAtThis && Input.GetKeyDown(KeyCode.E))
+            if (isLookingAtThis && Input.GetKeyDown(KeyCode.F))
             {
                 InventorySystem.Instance.AddItem(item);
                 Destroy(gameObject);

@@ -1,7 +1,5 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Netcode;
 using Image = UnityEngine.UI.Image;
 
 public class InventoryUI : MonoBehaviour
@@ -18,21 +16,14 @@ public class InventoryUI : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(WaitForLocalPlayer());
+        // Nic – inicializace probìhne pøes InitializeForPlayer
     }
 
-    IEnumerator WaitForLocalPlayer()
+    public void InitializeForPlayer(InventorySystem inventory)
     {
-        // Poèkej až se spawne lokální hráè
-        yield return new WaitUntil(() =>
-            NetworkManager.Singleton != null &&
-            NetworkManager.Singleton.LocalClient != null &&
-            NetworkManager.Singleton.LocalClient.PlayerObject != null);
-
-        localInventory = NetworkManager.Singleton.LocalClient.PlayerObject
-            .GetComponent<InventorySystem>();
-
+        localInventory = inventory;
         CreateSlots();
+        Debug.Log("InventoryUI inicializován!");
     }
 
     void CreateSlots()
